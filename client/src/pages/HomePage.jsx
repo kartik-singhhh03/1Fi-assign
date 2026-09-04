@@ -50,31 +50,47 @@ function HomePage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-5xl px-4 py-10">
+    <main className="min-h-screen bg-[#f3f4f6]">
+      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <header className="mb-8">
-          <p className="text-sm font-medium text-emerald-700">1Fi EMI</p>
-          <h1 className="mt-1 text-3xl font-semibold text-slate-900">
+          <p className="text-sm font-semibold tracking-wide text-slate-900">
+            1Fi EMI
+          </p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             Shop with mutual fund-backed EMI
           </h1>
-          <p className="mt-2 text-slate-600">
-            Choose a product to view variants and EMI plans.
+          <p className="mt-2 max-w-2xl text-slate-600">
+            Choose a product to view finishes, pricing, and EMI plans.
           </p>
         </header>
 
         {loading ? (
-          <p className="rounded-xl border border-slate-200 bg-white p-6 text-slate-600">
-            Loading products...
-          </p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="h-40 animate-pulse rounded-2xl border border-slate-200 bg-white"
+              />
+            ))}
+          </div>
         ) : null}
 
         {error ? (
-          <p className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-700">
+          <p
+            className="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-700"
+            role="alert"
+          >
             {error}
           </p>
         ) : null}
 
-        {!loading && !error ? (
+        {!loading && !error && products.length === 0 ? (
+          <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-slate-600">
+            No products are available right now.
+          </p>
+        ) : null}
+
+        {!loading && !error && products.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {products.map((product) => (
               <Link
@@ -86,11 +102,11 @@ function HomePage() {
                 <h2 className="mt-1 text-lg font-semibold text-slate-900">
                   {product.name}
                 </h2>
-                <p className="mt-3 text-xl font-semibold text-slate-900">
+                <p className="mt-4 text-2xl font-bold text-slate-900">
                   {formatCurrency(product.price)}
                 </p>
-                <p className="mt-1 text-sm text-slate-500 line-through">
-                  MRP {formatCurrency(product.mrp)}
+                <p className="mt-1 text-sm text-slate-400 line-through">
+                  {formatCurrency(product.mrp)}
                 </p>
               </Link>
             ))}

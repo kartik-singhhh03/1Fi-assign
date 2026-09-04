@@ -78,28 +78,33 @@ function ProductPage() {
       return;
     }
 
-    setConfirmation(
-      `You selected the ${selectedEmiPlan.tenure}-month EMI plan at ${formatCurrency(selectedEmiPlan.monthlyAmount)} per month.`
-    );
+    const interestLabel =
+      Number(selectedEmiPlan.interestRate) === 0
+        ? '0% interest'
+        : `${selectedEmiPlan.interestRate}% interest`;
+
+    setConfirmation({
+      monthlyAmount: selectedEmiPlan.monthlyAmount,
+      tenure: selectedEmiPlan.tenure,
+      interestLabel,
+    });
   }
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-slate-50">
-        <div className="mx-auto max-w-6xl px-4 py-10">
-          <div className="animate-pulse space-y-6">
-            <div className="h-4 w-40 rounded bg-slate-200" />
-            <div className="grid gap-8 lg:grid-cols-2">
-              <div className="aspect-square rounded-2xl bg-slate-200" />
-              <div className="space-y-4">
-                <div className="h-8 w-2/3 rounded bg-slate-200" />
-                <div className="h-4 w-1/3 rounded bg-slate-200" />
-                <div className="h-20 rounded bg-slate-200" />
-                <div className="h-40 rounded bg-slate-200" />
-              </div>
+      <main className="min-h-screen bg-[#f3f4f6]">
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <div className="h-4 w-28 animate-pulse rounded bg-slate-200" />
+          <div className="mt-6 grid animate-pulse gap-8 lg:grid-cols-2 lg:gap-10">
+            <div className="h-[28rem] rounded-3xl bg-slate-200" />
+            <div className="space-y-4">
+              <div className="h-10 w-40 rounded bg-slate-200" />
+              <div className="h-5 w-28 rounded bg-slate-200" />
+              <div className="h-6 w-56 rounded bg-slate-200" />
+              <div className="h-48 rounded-2xl bg-slate-200" />
             </div>
           </div>
-          <p className="mt-6 text-slate-600">Loading product...</p>
+          <p className="mt-6 text-sm text-slate-600">Loading product...</p>
         </div>
       </main>
     );
@@ -107,15 +112,15 @@ function ProductPage() {
 
   if (error === 'not_found') {
     return (
-      <main className="min-h-screen bg-slate-50">
-        <div className="mx-auto max-w-3xl px-4 py-16 text-center">
+      <main className="min-h-screen bg-[#f3f4f6]">
+        <div className="mx-auto max-w-xl px-4 py-20 text-center">
           <h1 className="text-2xl font-semibold text-slate-900">Product not found</h1>
           <p className="mt-2 text-slate-600">
             We could not find a product for this URL.
           </p>
           <Link
             to="/"
-            className="mt-6 inline-block rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white"
+            className="mt-6 inline-flex rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white"
           >
             Back to products
           </Link>
@@ -126,8 +131,8 @@ function ProductPage() {
 
   if (error === 'network' || error === 'server' || !product) {
     return (
-      <main className="min-h-screen bg-slate-50">
-        <div className="mx-auto max-w-3xl px-4 py-16 text-center">
+      <main className="min-h-screen bg-[#f3f4f6]">
+        <div className="mx-auto max-w-xl px-4 py-20 text-center">
           <h1 className="text-2xl font-semibold text-slate-900">
             Something went wrong
           </h1>
@@ -138,7 +143,7 @@ function ProductPage() {
           </p>
           <Link
             to="/"
-            className="mt-6 inline-block rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white"
+            className="mt-6 inline-flex rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white"
           >
             Back to products
           </Link>
@@ -148,46 +153,65 @@ function ProductPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        <Link to="/" className="text-sm font-medium text-slate-600 hover:text-slate-900">
+    <main className="min-h-screen bg-[#f3f4f6]">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+        <Link
+          to="/"
+          className="text-sm font-medium text-slate-600 hover:text-slate-900"
+        >
           ← All products
         </Link>
 
-        <div className="mt-6 grid gap-8 lg:grid-cols-2 lg:gap-12">
-          <ProductImage variant={selectedVariant} productName={product.name} />
+        <div className="mt-5 grid items-start gap-6 lg:grid-cols-2 lg:gap-10">
+          {/* Left: product visual card */}
+          <section className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-7">
+            <p className="text-xs font-semibold tracking-wide text-rose-600">
+              NEW
+            </p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+              {product.name}
+            </h1>
+            <p className="mt-1 text-base text-slate-500">
+              {selectedVariant ? selectedVariant.value : product.brand}
+            </p>
 
-          <section className="space-y-8">
-            <div>
-              <p className="text-sm font-medium text-slate-500">{product.brand}</p>
-              <h1 className="mt-1 text-3xl font-semibold text-slate-900">
-                {product.name}
-              </h1>
-              {product.description ? (
-                <p className="mt-3 text-slate-600">{product.description}</p>
-              ) : null}
-
-              <div className="mt-5">
-                <p className="text-3xl font-semibold text-slate-900">
-                  {formatCurrency(product.price)}
-                </p>
-                <p className="mt-1 text-base text-slate-500 line-through">
-                  MRP {formatCurrency(product.mrp)}
-                </p>
-              </div>
+            <div className="mt-6">
+              <ProductImage
+                variant={selectedVariant}
+                productName={product.name}
+              />
             </div>
 
-            <VariantSelector
-              variants={product.variants}
-              selectedVariant={selectedVariant}
-              onSelect={setSelectedVariant}
-            />
+            <div className="mt-6">
+              <VariantSelector
+                variants={product.variants}
+                selectedVariant={selectedVariant}
+                onSelect={setSelectedVariant}
+              />
+            </div>
+          </section>
+
+          {/* Right: price + EMI */}
+          <section className="space-y-7 lg:pt-2">
+            <div>
+              <p className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+                {formatCurrency(product.price)}
+              </p>
+              <p className="mt-2 text-lg text-slate-400 line-through">
+                {formatCurrency(product.mrp)}
+              </p>
+              {product.description ? (
+                <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-600">
+                  {product.description}
+                </p>
+              ) : null}
+            </div>
 
             <div>
               <h2 className="text-lg font-semibold text-slate-900">
-                EMI Plans backed by mutual funds
+                EMI plans backed by mutual funds
               </h2>
-              <p className="mt-1 text-sm text-slate-600">
+              <p className="mt-1 text-sm text-slate-500">
                 Select one plan to continue.
               </p>
               <div className="mt-4">
@@ -199,24 +223,35 @@ function ProductPage() {
               </div>
             </div>
 
-            <div>
+            <div className="sticky bottom-4 space-y-3 sm:static">
               <button
                 type="button"
                 onClick={handleProceed}
                 disabled={!selectedEmiPlan}
-                className={`w-full rounded-xl px-4 py-3 text-base font-semibold transition ${
+                aria-disabled={!selectedEmiPlan}
+                className={`w-full rounded-2xl px-4 py-3.5 text-base font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 ${
                   selectedEmiPlan
-                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    ? 'bg-slate-900 text-white hover:bg-slate-800'
                     : 'cursor-not-allowed bg-slate-200 text-slate-500'
                 }`}
               >
-                Proceed with selected plan
+                {selectedEmiPlan
+                  ? 'Proceed with selected plan'
+                  : 'Select an EMI plan to proceed'}
               </button>
 
               {confirmation ? (
-                <p className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-                  {confirmation}
-                </p>
+                <div
+                  className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900"
+                  role="status"
+                >
+                  <p className="font-medium">You selected:</p>
+                  <p className="mt-1">
+                    {formatCurrency(confirmation.monthlyAmount)} ×{' '}
+                    {confirmation.tenure} months
+                  </p>
+                  <p className="text-emerald-800">{confirmation.interestLabel}</p>
+                </div>
               ) : null}
             </div>
           </section>
